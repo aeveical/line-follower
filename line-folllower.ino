@@ -29,7 +29,7 @@ int IRSensorLeft = 0;
 int sensorDifferenceRight = 0;
 int sensorDifferenceLeft = 0;
 // set difference threshold
-const int threshold = 50;
+const int threshold = 25;
 // set initial direction of wheels (one wheel had switched wiring, so its default to go forward is backward in code)
 int rightMotorDirection = BACKWARD;
 int leftMotorDirection = FORWARD;
@@ -37,10 +37,12 @@ int leftMotorDirection = FORWARD;
 const float BASE = 25;
 // set wheel ratio (how fast the wheels go when turning)
 float wheelRatio = 3.5;
+// define wheel ratio input variable
+float wheelRatioInput = 0;
 
 void setup() {
   // initalize the serial port
-  Serial.begin(9600);
+  Serial.begin(115200);
   // set the ir sensor pins to be input
   pinMode(IR_RIGHT_IN, INPUT);
   pinMode(IR_LEFT_IN, INPUT);
@@ -59,8 +61,8 @@ void loop() {
   if (Serial.available() > 0) {
     // if something has been sent through the serial port, assume it's
     // a new wheel ratio and set the wheel ratio as such
-    String word = Serial.readString()
-    wheelRatio = word;
+    wheelRatioInput = Serial.parseFloat();
+    wheelRatio = wheelRatioInput;
   }
 
   // read the sensor values
@@ -68,9 +70,9 @@ void loop() {
   IRSensorLeft = analogRead(IR_LEFT_IN);
 
   // print values of sensors live to use in plot
-  Serial.println("IR RIGHT:")
+  Serial.print("IR_RIGHT:");
   Serial.println(IRSensorRight);
-  Serial.println("IR LEFT:")
+  Serial.print("IR_LEFT:");
   Serial.println(IRSensorLeft);
 
   // calculate the difference in initial and current sensor values
@@ -111,14 +113,14 @@ void loop() {
   // display motor speeds sent to arduino
   // for graphing purposes if the wheel was spinning backwards I represented it as a negative
   if (rightMotorDirection == FORWARD) {
-    motorRightSpeed = -(motorRightSpeed)
+    motorRightSpeed = -(motorRightSpeed);
   } else if (leftMotorDirection == BACKWARD) {
-    motorLeftSpeed = -(motorLeftSpeed)
+    motorLeftSpeed = -(motorLeftSpeed);
   }
   
-  Serial.println("Right Motor Speeds:");
+  Serial.print("Right_Motor_Speeds:");
   Serial.println(motorRightSpeed);
-  Serial.println("Left Motor Speeds:");
+  Serial.print("Left_Motor_Speeds:");
   Serial.println(motorLeftSpeed);
 }
 
